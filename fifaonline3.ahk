@@ -94,6 +94,7 @@ return
   if (LockWindow=1)
   {
     DllCall("LockWorkStation")
+    Exit
     return
   }
   pause
