@@ -5,7 +5,7 @@ checkApp()
 {
   WinGetActiveTitle,title
   checkTitle = FIFA
-  ;MsgBox %title%, %checkTitle%
+  OutputDebug, %title%, %checkTitle%
   if (title = checkTitle)
   {
     return true
@@ -28,11 +28,11 @@ getWindowRect(ByRef width, ByRef height)
 imageMatch(fullFileName,bClick=true)
 {
   getWindowRect(width,height)
-  
+
+      
 	CoordMode,pixel,relative
-  Imagesearch,FoundX, FoundY, 0,0,width,height,fullFileName
-  
- ; MsgBox %fullFileName%, %width%, %height%
+  Imagesearch,FoundX, FoundY, 0,0,width,height,%fullFileName%
+  OutputDebug, %fullFileName%, %width%, %height%, %ErrorLevel%
   if ErrorLevel = 0
   {
     Coordmode,Mouse,Relative
