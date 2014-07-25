@@ -96,10 +96,7 @@ return
     DllCall("LockWorkStation")
     ExitApp
   }
-  else
-  {
-    pause
-  }
+   pause
 return
 
 ^g::
