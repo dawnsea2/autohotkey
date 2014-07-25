@@ -85,7 +85,7 @@ MsgBox,8192,,반복 클릭 시작점에서 CTRL+A를 누르세요
   if (LockWindow=1)
   {
     DllCall("LockWorkStation")
-    return
+    ExitApp
   }
   reload
 return
@@ -94,10 +94,12 @@ return
   if (LockWindow=1)
   {
     DllCall("LockWorkStation")
-    Exit
-    return
+    ExitApp
   }
-  pause
+  else
+  {
+    pause
+  }
 return
 
 ^g::
@@ -139,7 +141,7 @@ Button시작:
       if (LockWindow=1)
       {
         DllCall("LockWorkStation")
-        break
+        ExitApp
       }
       continue
     }
@@ -163,7 +165,7 @@ Button시작:
       if (LockWindow=1)
       {
         DllCall("LockWorkStation")
-        break
+        ExitApp
       }
       continue
     }
