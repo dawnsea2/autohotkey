@@ -1,4 +1,19 @@
 ;--------------------------------------------------
+; 현재 체크 대상 APP 가 ACTIVE 인지 확인한다.
+;--------------------------------------------------
+checkApp()
+{
+  WinGetActiveTitle,title
+  checkTitle = FIFA
+  ;MsgBox %title%, %checkTitle%
+  if (title = checkTitle)
+  {
+    return true
+  }
+  return false
+}
+
+;--------------------------------------------------
 ; 액티브 윈도우의 크기를 구해온다
 ;--------------------------------------------------
 getWindowRect(ByRef width, ByRef height)
@@ -17,10 +32,10 @@ imageMatch(fullFileName,bClick=true)
 	CoordMode,pixel,relative
   Imagesearch,FoundX, FoundY, 0,0,width,height,fullFileName
   
-  ;MsgBox ./%fileName%.png
+ ; MsgBox %fullFileName%, %width%, %height%
   if ErrorLevel = 0
   {
-    Coordmode,Mouse,window
+    Coordmode,Mouse,Relative
     MouseMove,FoundX,FoundY
     if (bClick=true)
     {
@@ -37,73 +52,90 @@ imageMatch(fullFileName,bClick=true)
 ;--------------------------------------------------
 findandClickImages(path)
 {
-  Loop, %path%.png,,1
+  Loop, %path%\*.png,,1
   {
+    if (checkApp()=false)
+    {
+      break
+    }
     imageMatch(A_LoopFileFullPath)
   }
 }
 
+;--------------------------------------------------
+; 마우스 이동하여 클릭
+;--------------------------------------------------
+moveClick(x,y)
+{
+  ;MsgBox %x%,%y%
+  MouseMove,x,y
+  Click,x,y
+}
 
+;--------------------------------------------------
+; 엔트리 포인트
+;--------------------------------------------------
+MsgBox,8192,,반복 클릭 시작점에서 CTRL+A를 누르세요
 
 ^r::
-reload
+  reload
 return
 
 ^q::
-pause
+  pause
 return
 
 ^g::
-getWindowRect(width, height)
-WinGetPos,,,width,height,ahk_id %activeWinID%
-
-MouseGetPos, MouseX, MouseY
-PixelGetColor, color, %MouseX%, %MouseY%
-MsgBox The color at the current cursor position is %color%. %MouseX%, %MouseY% `nYour gui's client area is %width% by %height%
-
+  getWindowRect(width, height)
+  WinGetPos,,,width,height,ahk_id %activeWinID%
+  
+  MouseGetPos, MouseX, MouseY
+  PixelGetColor, color, %MouseX%, %MouseY%
+  MsgBox The color at the current cursor position is %color%. %MouseX%, %MouseY% `nYour gui's client area is %width% by %height%
 return
 
-
 ^a::
-SetMouseDelay,100
-
-loop 
-{
-  ;[1] 아래 이미지 파일 경로를 수정하세요
-  runPath = C:\Users\dawnsea2\Desktop\fifaon
+  MouseGetPos, startX, startY
+  imagePath = C:\Users\dawnsea2\Desktop\fifaon
   
-  ;이미지 파일 찾는 루프
-  founded = 0
-  Loop, %runPath%\*.png, ,1  
+  Gui, Add, Text,,이 위치 %startX%,%startY%를 반복 클릭 시도 합니다.`n이제 찾아 클릭할 이미지가 있는 폴더를 입력해주세요
+  Gui, Add, Edit, vImagePath w300, %imagePath%
+  Gui, Add, Button, w100 xp+200 yp+25, 시작
+  GuiControl, +default, 시작
+  Gui, Show
+return
+
+Button시작:
+  Gui,Submit
+  ;MsgBox %imagePath% %startX%,%startY%
+  Gui,Destroy
+  
+  SetMouseDelay,100
+  CoordMode,mouse,Relative
+  
+  loop 
   {
-    WinGetActiveTitle,foundWindow
-    if (foundWindow != "FIFA")
+    sleep,500
+      
+    ;[*] 포커스 벗어난 경우 이탈
+    if (checkApp()=false)
     {
       continue
     }
     
-    if (imageMatch(A_LoopFileFullPath) == 1)
-   {
-      founded = 1
-    }
-  }
-  
-
-  WinGetActiveTitle,foundWindow
-  if (founded == 0 && foundWindow == "FIFA")
-  {
+    ;[1] 지정한 위치 클릭 시도
+    moveClick(startX,startY)
+    
+    ;[2] 캡처한 이미지가 있는지 클릭 시도
+    findandClickImages(imagePath)
+    
+    ;[3] 엔터키를 일단 시도
     Send {Enter}
     
-    Click,920,760
+    ;[*] 포커스 벗어난 경우 이탈
+    if (checkApp()=false)
+    {
+      continue
+    }
   }
-
-if (foundWindow != "FIFA")
-{
-;DllCall("LockWorkStation")
-break
-}
-  
-  
-
-  sleep,100
-}
+return
