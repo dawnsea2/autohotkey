@@ -77,11 +77,25 @@ moveClick(x,y)
 ;--------------------------------------------------
 MsgBox,8192,,반복 클릭 시작점에서 CTRL+A를 누르세요
 
+
+;--------------------------------------------------
+; 이하 단축키 처리
+;--------------------------------------------------
 ^r::
+  if (LockWindow=1)
+  {
+    DllCall("LockWorkStation")
+    return
+  }
   reload
 return
 
 ^q::
+  if (LockWindow=1)
+  {
+    DllCall("LockWorkStation")
+    return
+  }
   pause
 return
 
@@ -100,6 +114,7 @@ return
   
   Gui, Add, Text,,이 위치 %startX%,%startY%를 반복 클릭 시도 합니다.`n이제 찾아 클릭할 이미지가 있는 폴더를 입력해주세요
   Gui, Add, Edit, vImagePath w300, %imagePath%
+  Gui, Add, Checkbox, vLockWindow yp+25, 실행 중단시 윈도우 잠금
   Gui, Add, Button, w100 xp+200 yp+25, 시작
   GuiControl, +default, 시작
   Gui, Show
@@ -107,7 +122,7 @@ return
 
 Button시작:
   Gui,Submit
-  ;MsgBox %imagePath% %startX%,%startY%
+  OutputDebug,%imagePath% %startX%,%startY%,%LockWindow%
   Gui,Destroy
   
   SetMouseDelay,100
@@ -120,6 +135,11 @@ Button시작:
     ;[*] 포커스 벗어난 경우 이탈
     if (checkApp()=false)
     {
+      if (LockWindow=1)
+      {
+        DllCall("LockWorkStation")
+        break
+      }
       continue
     }
     
@@ -132,9 +152,18 @@ Button시작:
     ;[3] 엔터키를 일단 시도
     Send {Enter}
     
+    ;[4] 다음 버튼의 대략의 위치 *0.93, *0.95
+    ;getWindowRect(width, height)
+    ;moveClick(width*0.93, height*0.95)
+    
     ;[*] 포커스 벗어난 경우 이탈
     if (checkApp()=false)
     {
+      if (LockWindow=1)
+      {
+        DllCall("LockWorkStation")
+        break
+      }
       continue
     }
   }
