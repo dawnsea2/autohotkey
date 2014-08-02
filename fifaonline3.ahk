@@ -110,7 +110,7 @@ return
 
 ^a::
   MouseGetPos, startX, startY
-  imagePath = C:\Users\dawnsea2\Desktop\fifaon
+  imagePath = F:\rep\autohotkey\autohotkey
   
   Gui, Add, Text,,이 위치 %startX%,%startY%를 반복 클릭 시도 합니다.`n이제 찾아 클릭할 이미지가 있는 폴더를 입력해주세요
   Gui, Add, Edit, vImagePath w300, %imagePath%
